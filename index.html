@@ -47,6 +47,22 @@ h1{font-size:1.3rem}
 .item a{display:flex;align-items:center;height:100%;padding:4px 10px;font-size:.88rem;line-height:1.2}
 .item a small{display:none}
 }
+.badge{display:inline-block;flex:none;margin-left:8px;padding:1px 8px;border-radius:999px;background:var(--ac);color:var(--bg);font-size:.68rem;font-weight:600;vertical-align:middle}
+@media(min-width:601px){
+html,body{height:100%}
+main{max-width:none;height:100%;display:flex;flex-direction:column;padding:24px 32px 28px}
+h1{font-size:2rem}
+.date{font-size:1.05rem}
+.chip.big{font-size:1.3rem}
+.chip{font-size:1rem}
+.sub{margin:16px 0 12px}
+#list{flex:1;min-height:0;display:flex}
+.grid{flex:1;grid-template-columns:repeat(4,1fr);grid-auto-rows:minmax(64px,1fr);gap:14px}
+.item a{display:flex;flex-direction:column;justify-content:center;height:100%;padding:12px 20px;font-size:clamp(1.05rem,1.8vw,1.6rem)}
+.item a small{font-size:.8rem}
+.badge{align-self:flex-start;margin:6px 0 0}
+}
+@media(min-width:601px) and (max-width:900px){.grid{grid-template-columns:repeat(3,1fr)}}
 </style>
 </head>
 <body>
@@ -60,19 +76,24 @@ h1{font-size:1.3rem}
 <div id="list"></div>
 </main>
 <script>
-var KEY="hub-fede-ps-v16";
+var KEY="hub-fede-ps-v20";
 var DEF=[
 {t:"Gmail",u:"https://mail.google.com",c:"Au quotidien"},
 {t:"Drive",u:"https://drive.google.com",c:"Au quotidien"},
 {t:"Qomon",u:"https://qomon.app/login",c:"Au quotidien"},
 {t:"Adhésion en ligne",u:"https://adhesion.parti-socialiste.fr/",c:"Adhérents"},
 {t:"Site national",u:"https://parti-socialiste.fr/",c:"Parti socialiste"},
-{t:"Ressources militantes",u:"https://ressources-militantes.parti-socialiste.fr/login.php",c:"Au quotidien"},
+{t:"Espace fédé",u:"https://ressources-militantes.parti-socialiste.fr/login.php",c:"Au quotidien"},
 {t:"Service-public.fr",u:"https://www.service-public.gouv.fr/particuliers/vosdroits/R51788",c:"Administration"},
-{t:"Tours Métropole – demande de maintenance",u:"https://formulaires.services.tours-metropole.fr/infra-telecom/demande-maintenance-ou-depose/",c:"Administration"},
-{t:"Ville de Blois – annuaire SIR",u:"https://www.blois.fr/annuaire/services-municipaux/sir",c:"Administration"},
+{t:"Tours Métropole – maintenance",u:"https://formulaires.services.tours-metropole.fr/infra-telecom/demande-maintenance-ou-depose/",c:"Administration",f:"37"},
+{t:"Blois – annuaire SIR",u:"https://www.blois.fr/annuaire/services-municipaux/sir",c:"Administration",f:"41"},
 {t:"Smash (transfert)",u:"https://fromsmash.com/fr",c:"Outils"},
 {t:"Framatoolbox",u:"https://framatoolbox.org/abc/fr/",c:"Outils"},
+{t:"Framadate",u:"https://framadate.org/abc/fr/",c:"Outils"},
+{t:"Tally",u:"https://tally.so",c:"Outils"},
+{t:"La Poste",u:"https://www.laposte.fr",c:"Outils"},
+{t:"Solocal",u:"https://www.solocal.com",c:"Outils"},
+{t:"La Nouvelle République",u:"https://www.lanouvellerepublique.fr",c:"Information"},
 {t:"Canva",u:"https://www.canva.com/fr_fr/",c:"Outils"},
 ];
 var links,editing=false;
@@ -85,7 +106,7 @@ var g=document.createElement("div");g.className="grid";var n=0;
 links.forEach(function(l,i){
 n++;var d=document.createElement("div");d.className="item";
 var a=document.createElement("a");a.href=l.u;a.target="_blank";a.rel="noopener noreferrer";
-a.textContent=l.t;var s=document.createElement("small");s.textContent=host(l.u);a.appendChild(s);
+a.textContent=l.t;if(l.f){var bd=document.createElement("span");bd.className="badge";bd.textContent="Fédé "+l.f;a.appendChild(bd)}var s=document.createElement("small");s.textContent=host(l.u);a.appendChild(s);
 d.appendChild(a);
 if(editing){var b=document.createElement("button");b.className="del";b.textContent="✕";b.setAttribute("aria-label","Supprimer");
 b.onclick=function(){links.splice(i,1);save();render()};d.appendChild(b)}
