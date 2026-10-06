@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hub Fédé PS</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#1b2430;--mu:#6b7686;--ac:#2f5bd8;--bd:#e2e6ec;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161c;--card:#1b222b;--tx:#e8ecf2;--mu:#93a0b2;--ac:#7ea2ff;--bd:#2a3340}}
+:root[data-theme="dark"]{--bg:#12161c;--card:#1b222b;--tx:#e8ecf2;--mu:#93a0b2;--ac:#7ea2ff;--bd:#2a3340}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:760px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:1.5rem;margin:0 0 4px}
+.hero{margin-bottom:14px}
+.date{color:var(--mu);text-transform:capitalize;margin:2px 0 10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--card);border:1px solid var(--bd);border-radius:999px;padding:6px 14px;font-size:.9rem;color:var(--tx);text-decoration:none;font-variant-numeric:tabular-nums}
+.chip.big{font-weight:600;font-size:1.1rem}
+.sub{color:var(--mu);margin:0 0 16px;font-size:.9rem}
+input,button{font:inherit;color:var(--tx)}
+input{width:100%;padding:11px 12px;border:1px solid var(--bd);border-radius:10px;background:var(--card)}
+.bar{display:flex;gap:8px;margin-bottom:18px}
+button{border:1px solid var(--bd);background:var(--card);border-radius:10px;padding:10px 14px;cursor:pointer}
+button.pri{background:var(--ac);border-color:var(--ac);color:#fff}
+h2{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--mu);margin:22px 0 8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.item{display:flex;align-items:center;gap:6px}
+.item a{flex:1;display:block;padding:13px 14px;background:var(--card);border:1px solid var(--bd);border-radius:12px;color:var(--tx);text-decoration:none;font-weight:500;min-width:0}
+.item a small{display:block;color:var(--mu);font-weight:400;font-size:.75rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item a:active{border-color:var(--ac)}
+.del{padding:8px 10px;color:#d33}
+#form{display:none;gap:8px;flex-direction:column;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px;margin-bottom:18px}
+#form.on{display:flex}
+.empty{color:var(--mu);text-align:center;padding:30px 0}
+</style>
+</head>
+<body>
+<main>
+<section class="hero">
+<h1 id="hello">Bonjour Martin</h1>
+<div id="date" class="date"></div>
+<div class="chips"><span id="clock" class="chip big"></span><span id="week" class="chip"></span><a id="meteo" class="chip" href="https://www.google.com/search?q=m%C3%A9t%C3%A9o+Blois" target="_blank" rel="noopener noreferrer">☁ Météo Blois</a></div>
+</section>
+<p class="sub">Hub Fédé PS</p>
+<div class="bar">
+<input id="q" type="search" placeholder="Rechercher un lien…" aria-label="Rechercher">
+<button id="add" class="pri" aria-label="Ajouter">+</button>
+<button id="edit" aria-label="Modifier">✎</button>
+</div>
+<div id="form">
+<input id="ft" placeholder="Titre">
+<input id="fu" placeholder="Adresse (https://…)" inputmode="url">
+<input id="fc" placeholder="Catégorie" list="cats">
+<datalist id="cats"></datalist>
+<button id="ok" class="pri">Enregistrer le lien</button>
+</div>
+<div id="list"></div>
+</main>
+<script>
+var KEY="hub-fede-ps-v7";
+var DEF=[
+{t:"Gmail",u:"https://mail.google.com",c:"Au quotidien"},
+{t:"Agenda",u:"https://calendar.google.com",c:"Au quotidien"},
+{t:"Drive",u:"https://drive.google.com",c:"Au quotidien"},
+{t:"Qomon",u:"https://qomon.app/login",c:"Au quotidien"},
+{t:"Adhésion en ligne",u:"https://adhesion.parti-socialiste.fr/",c:"Adhérents"},
+{t:"Site national",u:"https://parti-socialiste.fr/",c:"Parti socialiste"},
+{t:"Ressources militantes",u:"https://ressources-militantes.parti-socialiste.fr/login.php",c:"Au quotidien"},
+{t:"Service-public.fr",u:"https://www.service-public.gouv.fr/particuliers/vosdroits/R51788",c:"Administration"},
+{t:"Tours Métropole – demande de maintenance",u:"https://formulaires.services.tours-metropole.fr/infra-telecom/demande-maintenance-ou-depose/",c:"Administration"},
+{t:"Ville de Blois – annuaire SIR",u:"https://www.blois.fr/annuaire/services-municipaux/sir",c:"Administration"},
+{t:"Smash (transfert)",u:"https://fromsmash.com/fr",c:"Outils"},
+{t:"Framatoolbox",u:"https://framatoolbox.org/abc/fr/",c:"Outils"},
+{t:"Canva",u:"https://www.canva.com/fr_fr/",c:"Outils"},
+{t:"Datawrapper",u:"https://app.datawrapper.de",c:"Cartes et données"},
+{t:"Have I Been Pwned",u:"https://haveibeenpwned.com",c:"Sécurité"}
+];
+var links,editing=false;
+function load(){try{var s=localStorage.getItem(KEY);if(s){var a=JSON.parse(s);if(Array.isArray(a))return a}}catch(e){}return DEF.slice()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(links))}catch(e){}}
+function host(u){try{return new URL(u).hostname.replace(/^www\./,"")}catch(e){return u}}
+function render(){
+var q=document.getElementById("q").value.toLowerCase().trim();
+var box=document.getElementById("list");box.textContent="";
+var groups={},order=[];
+links.forEach(function(l,i){
+if(q&&(l.t+" "+l.u+" "+l.c).toLowerCase().indexOf(q)<0)return;
+if(!groups[l.c]){groups[l.c]=[];order.push(l.c)}
+groups[l.c].push(i)});
+if(!order.length){var e=document.createElement("div");e.className="empty";e.textContent="Aucun lien.";box.appendChild(e)}
+order.forEach(function(c){
+var h=document.createElement("h2");h.textContent=c;box.appendChild(h);
+var g=document.createElement("div");g.className="grid";
+groups[c].forEach(function(i){
+var l=links[i],d=document.createElement("div");d.className="item";
+var a=document.createElement("a");a.href=l.u;a.target="_blank";a.rel="noopener noreferrer";
+a.textContent=l.t;var s=document.createElement("small");s.textContent=host(l.u);a.appendChild(s);
+d.appendChild(a);
+if(editing){var b=document.createElement("button");b.className="del";b.textContent="✕";b.setAttribute("aria-label","Supprimer");
+b.onclick=function(){links.splice(i,1);save();render()};d.appendChild(b)}
+g.appendChild(d)});
+box.appendChild(g)});
+var dl=document.getElementById("cats");dl.textContent="";
+var seen={};links.forEach(function(l){if(!seen[l.c]){seen[l.c]=1;var o=document.createElement("option");o.value=l.c;dl.appendChild(o)}})}
+function wk(d){var t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));var n=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-n);var y=new Date(Date.UTC(t.getUTCFullYear(),0,1));return Math.ceil(((t-y)/864e5+1)/7)}
+function tick(){var d=new Date();
+document.getElementById("hello").textContent=(d.getHours()>=18?"Bonsoir":"Bonjour")+" Martin";
+document.getElementById("date").textContent=d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+document.getElementById("clock").textContent=d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+document.getElementById("week").textContent="Semaine "+wk(d)}
+tick();setInterval(tick,15000);
+links=load();render();
+document.getElementById("q").oninput=render;
+document.getElementById("add").onclick=function(){document.getElementById("form").classList.toggle("on")};
+document.getElementById("edit").onclick=function(){editing=!editing;render()};
+document.getElementById("ok").onclick=function(){
+var t=document.getElementById("ft").value.trim(),u=document.getElementById("fu").value.trim(),c=document.getElementById("fc").value.trim()||"Autres";
+if(!t||!u)return;
+if(!/^https?:\/\//i.test(u))u="https://"+u;
+links.push({t:t,u:u,c:c});save();
+["ft","fu","fc"].forEach(function(id){document.getElementById(id).value=""});
+document.getElementById("form").classList.remove("on");render()};
+</script>
+</body>
+</html>
