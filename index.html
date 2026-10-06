@@ -52,17 +52,14 @@ h2{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--mu)
 <div id="form">
 <input id="ft" placeholder="Titre">
 <input id="fu" placeholder="Adresse (https://…)" inputmode="url">
-<input id="fc" placeholder="Catégorie" list="cats">
-<datalist id="cats"></datalist>
 <button id="ok" class="pri">Enregistrer le lien</button>
 </div>
 <div id="list"></div>
 </main>
 <script>
-var KEY="hub-fede-ps-v7";
+var KEY="hub-fede-ps-v11";
 var DEF=[
 {t:"Gmail",u:"https://mail.google.com",c:"Au quotidien"},
-{t:"Agenda",u:"https://calendar.google.com",c:"Au quotidien"},
 {t:"Drive",u:"https://drive.google.com",c:"Au quotidien"},
 {t:"Qomon",u:"https://qomon.app/login",c:"Au quotidien"},
 {t:"Adhésion en ligne",u:"https://adhesion.parti-socialiste.fr/",c:"Adhérents"},
@@ -73,9 +70,8 @@ var DEF=[
 {t:"Ville de Blois – annuaire SIR",u:"https://www.blois.fr/annuaire/services-municipaux/sir",c:"Administration"},
 {t:"Smash (transfert)",u:"https://fromsmash.com/fr",c:"Outils"},
 {t:"Framatoolbox",u:"https://framatoolbox.org/abc/fr/",c:"Outils"},
+{t:"Météo Blois",u:"https://meteofrance.com/previsions-meteo-france/blois/41000",c:"Outils"},
 {t:"Canva",u:"https://www.canva.com/fr_fr/",c:"Outils"},
-{t:"Datawrapper",u:"https://app.datawrapper.de",c:"Cartes et données"},
-{t:"Have I Been Pwned",u:"https://haveibeenpwned.com",c:"Sécurité"}
 ];
 var links,editing=false;
 function load(){try{var s=localStorage.getItem(KEY);if(s){var a=JSON.parse(s);if(Array.isArray(a))return a}}catch(e){}return DEF.slice()}
@@ -84,26 +80,17 @@ function host(u){try{return new URL(u).hostname.replace(/^www\./,"")}catch(e){re
 function render(){
 var q=document.getElementById("q").value.toLowerCase().trim();
 var box=document.getElementById("list");box.textContent="";
-var groups={},order=[];
+var g=document.createElement("div");g.className="grid";var n=0;
 links.forEach(function(l,i){
-if(q&&(l.t+" "+l.u+" "+l.c).toLowerCase().indexOf(q)<0)return;
-if(!groups[l.c]){groups[l.c]=[];order.push(l.c)}
-groups[l.c].push(i)});
-if(!order.length){var e=document.createElement("div");e.className="empty";e.textContent="Aucun lien.";box.appendChild(e)}
-order.forEach(function(c){
-var h=document.createElement("h2");h.textContent=c;box.appendChild(h);
-var g=document.createElement("div");g.className="grid";
-groups[c].forEach(function(i){
-var l=links[i],d=document.createElement("div");d.className="item";
+if(q&&(l.t+" "+l.u).toLowerCase().indexOf(q)<0)return;
+n++;var d=document.createElement("div");d.className="item";
 var a=document.createElement("a");a.href=l.u;a.target="_blank";a.rel="noopener noreferrer";
 a.textContent=l.t;var s=document.createElement("small");s.textContent=host(l.u);a.appendChild(s);
 d.appendChild(a);
 if(editing){var b=document.createElement("button");b.className="del";b.textContent="✕";b.setAttribute("aria-label","Supprimer");
 b.onclick=function(){links.splice(i,1);save();render()};d.appendChild(b)}
 g.appendChild(d)});
-box.appendChild(g)});
-var dl=document.getElementById("cats");dl.textContent="";
-var seen={};links.forEach(function(l){if(!seen[l.c]){seen[l.c]=1;var o=document.createElement("option");o.value=l.c;dl.appendChild(o)}})}
+if(!n){var e=document.createElement("div");e.className="empty";e.textContent="Aucun lien.";box.appendChild(e)}else box.appendChild(g)}
 function wk(d){var t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));var n=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-n);var y=new Date(Date.UTC(t.getUTCFullYear(),0,1));return Math.ceil(((t-y)/864e5+1)/7)}
 function tick(){var d=new Date();
 document.getElementById("hello").textContent=(d.getHours()>=18?"Bonsoir":"Bonjour")+" Martin";
@@ -116,11 +103,11 @@ document.getElementById("q").oninput=render;
 document.getElementById("add").onclick=function(){document.getElementById("form").classList.toggle("on")};
 document.getElementById("edit").onclick=function(){editing=!editing;render()};
 document.getElementById("ok").onclick=function(){
-var t=document.getElementById("ft").value.trim(),u=document.getElementById("fu").value.trim(),c=document.getElementById("fc").value.trim()||"Autres";
+var t=document.getElementById("ft").value.trim(),u=document.getElementById("fu").value.trim(),c="Autres";
 if(!t||!u)return;
 if(!/^https?:\/\//i.test(u))u="https://"+u;
 links.push({t:t,u:u,c:c});save();
-["ft","fu","fc"].forEach(function(id){document.getElementById(id).value=""});
+["ft","fu"].forEach(function(id){document.getElementById(id).value=""});
 document.getElementById("form").classList.remove("on");render()};
 </script>
 </body>
