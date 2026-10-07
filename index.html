@@ -63,20 +63,25 @@ h1{font-size:2rem}
 .badge{align-self:flex-start;margin:6px 0 0}
 }
 @media(min-width:601px) and (max-width:900px){.grid{grid-template-columns:repeat(3,1fr)}}
+.badge::before{content:"Fédé "}
+@media(max-width:600px){.badge::before{content:none}.badge{margin-left:6px}}
+.chips{flex-wrap:nowrap;align-items:center}
+#date::first-letter{text-transform:uppercase}
+.chip{white-space:nowrap}
+@media(max-width:600px){.chips{gap:5px}.chip{padding:5px 9px;font-size:.78rem}.chip.big{font-size:.95rem}}
 </style>
 </head>
 <body>
 <main>
 <section class="hero">
 <h1 id="hello">Bonjour Martin</h1>
-<div id="date" class="date"></div>
-<div class="chips"><span id="clock" class="chip big"></span><span id="week" class="chip"></span></div>
+<div class="chips"><span id="date" class="chip"></span><span id="clock" class="chip big"></span><span id="week" class="chip"></span></div>
 </section>
 <p class="sub">Hub Fédé PS</p>
 <div id="list"></div>
 </main>
 <script>
-var KEY="hub-fede-ps-v20";
+var KEY="hub-fede-ps-v25";
 var DEF=[
 {t:"Gmail",u:"https://mail.google.com",c:"Au quotidien"},
 {t:"Drive",u:"https://drive.google.com",c:"Au quotidien"},
@@ -85,7 +90,7 @@ var DEF=[
 {t:"Site national",u:"https://parti-socialiste.fr/",c:"Parti socialiste"},
 {t:"Espace fédé",u:"https://ressources-militantes.parti-socialiste.fr/login.php",c:"Au quotidien"},
 {t:"Service-public.fr",u:"https://www.service-public.gouv.fr/particuliers/vosdroits/R51788",c:"Administration"},
-{t:"Tours Métropole – maintenance",u:"https://formulaires.services.tours-metropole.fr/infra-telecom/demande-maintenance-ou-depose/",c:"Administration",f:"37"},
+{t:"Tours Métropole",u:"https://formulaires.services.tours-metropole.fr/infra-telecom/demande-maintenance-ou-depose/",c:"Administration",f:"37"},
 {t:"Blois – annuaire SIR",u:"https://www.blois.fr/annuaire/services-municipaux/sir",c:"Administration",f:"41"},
 {t:"Smash (transfert)",u:"https://fromsmash.com/fr",c:"Outils"},
 {t:"Framatoolbox",u:"https://framatoolbox.org/abc/fr/",c:"Outils"},
@@ -94,6 +99,11 @@ var DEF=[
 {t:"La Poste",u:"https://www.laposte.fr",c:"Outils"},
 {t:"Solocal",u:"https://www.solocal.com",c:"Outils"},
 {t:"La Nouvelle République",u:"https://www.lanouvellerepublique.fr",c:"Information"},
+{t:"data.gouv.fr",u:"https://www.data.gouv.fr",c:"Administration"},
+{t:"Yousign",u:"https://yousign.com",c:"Outils"},
+{t:"franceinfo",u:"https://www.francetvinfo.fr",c:"Information"},
+{t:"Libération",u:"https://www.liberation.fr",c:"Information"},
+{t:"Le Monde",u:"https://www.lemonde.fr",c:"Information"},
 {t:"Canva",u:"https://www.canva.com/fr_fr/",c:"Outils"},
 ];
 var links,editing=false;
@@ -106,7 +116,7 @@ var g=document.createElement("div");g.className="grid";var n=0;
 links.forEach(function(l,i){
 n++;var d=document.createElement("div");d.className="item";
 var a=document.createElement("a");a.href=l.u;a.target="_blank";a.rel="noopener noreferrer";
-a.textContent=l.t;if(l.f){var bd=document.createElement("span");bd.className="badge";bd.textContent="Fédé "+l.f;a.appendChild(bd)}var s=document.createElement("small");s.textContent=host(l.u);a.appendChild(s);
+a.textContent=l.t;if(l.f){var bd=document.createElement("span");bd.className="badge";bd.textContent=l.f;a.appendChild(bd)}var s=document.createElement("small");s.textContent=host(l.u);a.appendChild(s);
 d.appendChild(a);
 if(editing){var b=document.createElement("button");b.className="del";b.textContent="✕";b.setAttribute("aria-label","Supprimer");
 b.onclick=function(){links.splice(i,1);save();render()};d.appendChild(b)}
@@ -115,7 +125,7 @@ if(!n){var e=document.createElement("div");e.className="empty";e.textContent="Au
 function wk(d){var t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));var n=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-n);var y=new Date(Date.UTC(t.getUTCFullYear(),0,1));return Math.ceil(((t-y)/864e5+1)/7)}
 function tick(){var d=new Date();
 document.getElementById("hello").textContent=(d.getHours()>=18?"Bonsoir":"Bonjour")+" Martin";
-document.getElementById("date").textContent=d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+document.getElementById("date").textContent=d.toLocaleDateString("fr-FR",window.innerWidth<=600?{weekday:"short",day:"numeric",month:"short",year:"numeric"}:{weekday:"long",day:"numeric",month:"long",year:"numeric"});
 document.getElementById("clock").textContent=d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
 document.getElementById("week").textContent="Semaine "+wk(d)}
 tick();setInterval(tick,15000);
